@@ -289,7 +289,7 @@ unsigned long timeFunction()
 void test_TimerCallbackGetsCalled()
 {
     g_timerCallbackCalled = false;
-    OneshotTimer timer(timeFunction, timerCallback);
+    OneshotTimer timer(timerCallback, timeFunction);
     timer.setTimeMs(0);
     g_timerValue = 1;
     timer.tick(nullptr);
@@ -300,7 +300,7 @@ void test_TimerCallbackGetsCalled()
 void test_TimerCancel()
 {
     g_timerCallbackCalled = false;
-    OneshotTimer timer(timeFunction, timerCallback);
+    OneshotTimer timer(timerCallback, timeFunction);
     timer.setTimeMs(0);
     g_timerValue = 1;
     timer.cancel();
@@ -312,7 +312,7 @@ void test_TimerCancel()
 void test_TimerPayload()
 {
     g_timerCallbackCalled = false;
-    OneshotTimer timer(timeFunction, timerCallback);
+    OneshotTimer timer(timerCallback, timeFunction);
     g_timerValue = 1;
     timer.setTimeMs(0);
     timer.tick(&timer);

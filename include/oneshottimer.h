@@ -5,7 +5,7 @@ namespace embedded
     class OneshotTimer
     {
     public:
-        explicit OneshotTimer(unsigned long (*timeFunc)(), void (*callback)(void *))
+        explicit OneshotTimer(void (*callback)(void *), unsigned long (*timeFunc)())
             : m_duration(0), m_startTime(0), m_callback(callback), m_timeFunc(timeFunc), m_expired(true){};
 
         void tick(void *payload)
