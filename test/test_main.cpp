@@ -1,4 +1,5 @@
 #include <unity.h>
+#include "eventbutton.h"
 #include "eventqueue.h"
 #include "oneshottimer.h"
 #include "optional.h"
@@ -320,6 +321,21 @@ void test_TimerPayload()
     TEST_ASSERT_EQUAL(&timer, g_timerCallbackPayload);
 }
 
+bool g_eventButtonCallbackCalled = false;
+void eventButtonCallback()
+{
+    g_eventButtonCallbackCalled = true;
+}
+
+void test_EventButtonCallbackGetsCalled()
+{
+    g_eventButtonCallbackCalled = true;
+    EventButton button(1, eventButtonCallback, timeFunction);
+    g_timerValue = 0;
+    button.update(1);
+    TEST_ASSERT_TRUE(g_eventButtonCallbackCalled);
+}
+
 void process()
 {
     UNITY_BEGIN();
@@ -349,6 +365,8 @@ void process()
     RUN_TEST(test_TimerCallbackGetsCalled);
     RUN_TEST(test_TimerCancel);
     RUN_TEST(test_TimerPayload);
+
+    RUN_TEST(test_EventButtonCallbackGetsCalled);
 
     UNITY_END();
 }
