@@ -273,11 +273,11 @@ void test_OptionalLess()
     TEST_ASSERT_FALSE(Optional<int>(1) < Optional<int>(0));
 }
 
-bool g_timerCallbackCalled = false;
+int g_timerCallbackCalled = 0;
 void *g_timerCallbackPayload = nullptr;
 void timerCallback(void *payload)
 {
-    g_timerCallbackCalled = true;
+    g_timerCallbackCalled++;
     g_timerCallbackPayload = payload;
 }
 
@@ -289,30 +289,29 @@ unsigned long timeFunction()
 
 void test_TimerCallbackGetsCalled()
 {
-    g_timerCallbackCalled = false;
+    g_timerCallbackCalled = 0;
     OneshotTimer timer(timerCallback, timeFunction);
     timer.setTimeMs(0);
     g_timerValue = 1;
     timer.tick(nullptr);
 
-    TEST_ASSERT_TRUE(g_timerCallbackCalled);
+    TEST_ASSERT_EQUAL(1, g_timerCallbackCalled);
 }
 
 void test_TimerCancel()
 {
-    g_timerCallbackCalled = false;
+    g_timerCallbackCalled = 0;
     OneshotTimer timer(timerCallback, timeFunction);
     timer.setTimeMs(0);
     g_timerValue = 1;
     timer.cancel();
     timer.tick(nullptr);
 
-    TEST_ASSERT_FALSE(g_timerCallbackCalled);
+    TEST_ASSERT_EQUAL(0, g_timerCallbackCalled);
 }
 
 void test_TimerPayload()
 {
-    g_timerCallbackCalled = false;
     OneshotTimer timer(timerCallback, timeFunction);
     g_timerValue = 1;
     timer.setTimeMs(0);
@@ -321,19 +320,33 @@ void test_TimerPayload()
     TEST_ASSERT_EQUAL(&timer, g_timerCallbackPayload);
 }
 
-bool g_eventButtonCallbackCalled = false;
+int g_eventButtonCallbackCalled = 0;
 void eventButtonCallback()
 {
-    g_eventButtonCallbackCalled = true;
+    g_eventButtonCallbackCalled++;
 }
 
 void test_EventButtonCallbackGetsCalled()
 {
-    g_eventButtonCallbackCalled = true;
+    g_eventButtonCallbackCalled = 0;
     EventButton button(1, eventButtonCallback, timeFunction);
     g_timerValue = 0;
     button.update(1);
-    TEST_ASSERT_TRUE(g_eventButtonCallbackCalled);
+    TEST_ASSERT_EQUAL(1, g_eventButtonCallbackCalled);
+}
+
+void test_EventButtonDebounces()
+{
+    g_eventButtonCallbackCalled = 0;
+    EventButton button(3, eventButtonCallback, timeFunction);
+    g_timerValue = 0;
+    button.update(1);
+    g_timerValue = 1;
+    button.update(0);
+    g_timerValue = 2;
+    button.update(1);
+
+    TEST_ASSERT_EQUAL(1, g_eventButtonCallbackCalled);
 }
 
 void process()
@@ -367,6 +380,7 @@ void process()
     RUN_TEST(test_TimerPayload);
 
     RUN_TEST(test_EventButtonCallbackGetsCalled);
+    RUN_TEST(test_EventButtonDebounces);
 
     UNITY_END();
 }

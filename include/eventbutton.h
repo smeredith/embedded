@@ -55,8 +55,6 @@ namespace embedded
     void update(int buttonState)
     {
       m_stateMachine.enqueue(buttonState ? eventbutton::Event::high : eventbutton::Event::low);
-      m_stateMachine.tick(eventbutton::g_transitions, eventbutton::g_behaviors, this);
-
       m_timer.tick(this);
       m_stateMachine.tick(eventbutton::g_transitions, eventbutton::g_behaviors, this);
     }
