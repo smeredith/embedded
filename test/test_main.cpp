@@ -349,6 +349,21 @@ void test_EventButtonDebounces()
     TEST_ASSERT_EQUAL(1, g_eventButtonCallbackCalled);
 }
 
+void test_EventButtonResets()
+{
+    g_eventButtonCallbackCalled = 0;
+    EventButton button(4, eventButtonCallback, timeFunction);
+    g_timerValue = 0;
+    button.update(1);
+    button.update(0);
+    g_timerValue = 4;
+    button.update(0);
+    button.update(0);
+    button.update(1);
+
+    TEST_ASSERT_EQUAL(2, g_eventButtonCallbackCalled);
+}
+
 void process()
 {
     UNITY_BEGIN();
@@ -381,6 +396,7 @@ void process()
 
     RUN_TEST(test_EventButtonCallbackGetsCalled);
     RUN_TEST(test_EventButtonDebounces);
+    RUN_TEST(test_EventButtonResets);
 
     UNITY_END();
 }
