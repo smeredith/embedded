@@ -1,7 +1,8 @@
 #include <unity.h>
 #include "eventqueue.h"
-#include "statemachine.h"
+#include "oneshottimer.h"
 #include "optional.h"
+#include "statemachine.h"
 
 using namespace embedded;
 
@@ -40,12 +41,12 @@ void resetMonitors()
     g_exits2 = 0;
 }
 
-void enters0(void*) { g_enters0++; }
-void exits0(void*) { g_exits0++; }
-void enters1(void*) { g_enters1++; }
-void exits1(void*) { g_exits1++; }
-void enters2(void*) { g_enters2++; }
-void exits2(void*) { g_exits2++; }
+void enters0(void *) { g_enters0++; }
+void exits0(void *) { g_exits0++; }
+void enters1(void *) { g_enters1++; }
+void exits1(void *) { g_exits1++; }
+void enters2(void *) { g_enters2++; }
+void exits2(void *) { g_exits2++; }
 
 using MyStateMachine = StateMachine<State, Event>;
 
@@ -161,7 +162,6 @@ void test_NoSelfTransisionIfNotInTransitionTable()
     TEST_ASSERT_EQUAL(0, g_exits1);
     TEST_ASSERT_EQUAL(0, g_enters2);
     TEST_ASSERT_EQUAL(0, g_exits2);
-
 }
 
 void test_NoEventsNoBehaviors()
@@ -272,6 +272,54 @@ void test_OptionalLess()
     TEST_ASSERT_FALSE(Optional<int>(1) < Optional<int>(0));
 }
 
+bool g_timerCallbackCalled = false;
+void *g_timerCallbackPayload = nullptr;
+void timerCallback(void *payload)
+{
+    g_timerCallbackCalled = true;
+    g_timerCallbackPayload = payload;
+}
+
+unsigned long g_timerValue = 0;
+unsigned long timerFunction()
+{
+    return g_timerValue;
+}
+
+void test_TimerCallbackGetsCalled()
+{
+    g_timerCallbackCalled = false;
+    OneshotTimer<timerFunction> timer(timerCallback);
+    timer.setTimeMs(0);
+    g_timerValue = 1;
+    timer.tick(nullptr);
+
+    TEST_ASSERT_TRUE(g_timerCallbackCalled);
+}
+
+void test_TimerCancel()
+{
+    g_timerCallbackCalled = false;
+    OneshotTimer<timerFunction> timer(timerCallback);
+    timer.setTimeMs(0);
+    g_timerValue = 1;
+    timer.cancel();
+    timer.tick(nullptr);
+
+    TEST_ASSERT_FALSE(g_timerCallbackCalled);
+}
+
+void test_TimerPayload()
+{
+    g_timerCallbackCalled = false;
+    OneshotTimer<timerFunction> timer(timerCallback);
+    g_timerValue = 1;
+    timer.setTimeMs(0);
+    timer.tick(&timer);
+
+    TEST_ASSERT_EQUAL(&timer, g_timerCallbackPayload);
+}
+
 void process()
 {
     UNITY_BEGIN();
@@ -298,7 +346,11 @@ void process()
     RUN_TEST(test_OptionalNotEqual);
     RUN_TEST(test_OptionalLess);
 
-    UNITY_END(); 
+    RUN_TEST(test_TimerCallbackGetsCalled);
+    RUN_TEST(test_TimerCancel);
+    RUN_TEST(test_TimerPayload);
+
+    UNITY_END();
 }
 
 #ifdef ARDUINO
