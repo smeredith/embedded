@@ -281,7 +281,7 @@ void timerCallback(void *payload)
 }
 
 unsigned long g_timerValue = 0;
-unsigned long timerFunction()
+unsigned long timeFunction()
 {
     return g_timerValue;
 }
@@ -289,7 +289,7 @@ unsigned long timerFunction()
 void test_TimerCallbackGetsCalled()
 {
     g_timerCallbackCalled = false;
-    OneshotTimer<timerFunction> timer(timerCallback);
+    OneshotTimer timer(timeFunction, timerCallback);
     timer.setTimeMs(0);
     g_timerValue = 1;
     timer.tick(nullptr);
@@ -300,7 +300,7 @@ void test_TimerCallbackGetsCalled()
 void test_TimerCancel()
 {
     g_timerCallbackCalled = false;
-    OneshotTimer<timerFunction> timer(timerCallback);
+    OneshotTimer timer(timeFunction, timerCallback);
     timer.setTimeMs(0);
     g_timerValue = 1;
     timer.cancel();
@@ -312,7 +312,7 @@ void test_TimerCancel()
 void test_TimerPayload()
 {
     g_timerCallbackCalled = false;
-    OneshotTimer<timerFunction> timer(timerCallback);
+    OneshotTimer timer(timeFunction, timerCallback);
     g_timerValue = 1;
     timer.setTimeMs(0);
     timer.tick(&timer);
