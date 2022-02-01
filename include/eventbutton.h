@@ -10,7 +10,6 @@ namespace embedded
     void noop(void*) {};
     void exitReleased(void *);
     void enterDebouncingPress(void *);
-    void exitDebouncingPress(void *);
 
     void debounceTimerHandler(void *);
 
@@ -38,7 +37,7 @@ namespace embedded
 
     const FSM::Behavior g_behaviors[] = {
         {State::released, noop, exitReleased},
-        {State::debouncingPress, enterDebouncingPress, exitDebouncingPress}};
+        {State::debouncingPress, enterDebouncingPress, noop}};
   }
 
   class EventButton
@@ -66,11 +65,6 @@ namespace embedded
       m_timer.setTimeMs(m_intervalMs);
     }
 
-    void exitDebouncingPress()
-    {
-      m_timer.cancel();
-    }
-
     void handleTimerExpired()
     {
       m_stateMachine.enqueue(eventbutton::Event::timerExpired);
@@ -95,12 +89,6 @@ namespace embedded
     {
       //Serial.println("+DebouncingPress()");
       static_cast<EventButton *>(eventButton)->enterDebouncingPress();
-    }
-
-    void exitDebouncingPress(void *eventButton)
-    {
-      //Serial.println("-DebouncingPress()");
-      static_cast<EventButton *>(eventButton)->exitDebouncingPress();
     }
 
     void debounceTimerHandler(void *eventButton)
