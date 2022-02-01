@@ -24,7 +24,7 @@ namespace embedded
             m_expired = false;
         }
 
-        long timeRemaining()
+        long timeRemaining() const
         {
             if (m_expired)
                 return 0L;
@@ -35,6 +35,11 @@ namespace embedded
         void cancel()
         {
             m_expired = true;
+        }
+
+        bool isActive() const
+        {
+            return !m_expired;
         }
 
     private:

@@ -320,6 +320,18 @@ void test_TimerPayload()
     TEST_ASSERT_EQUAL(&timer, g_timerCallbackPayload);
 }
 
+void test_TimerIsActive()
+{
+    OneshotTimer timer(timerCallback, timeFunction);
+    g_timerValue = 0;
+    timer.setTimeMs(1);
+
+    TEST_ASSERT_TRUE(timer.isActive());
+    g_timerValue = 1;
+    timer.tick(nullptr);
+    TEST_ASSERT_FALSE(timer.isActive());
+}
+
 int g_eventButtonCallbackCalled = 0;
 void eventButtonCallback()
 {
@@ -393,6 +405,7 @@ void process()
     RUN_TEST(test_TimerCallbackGetsCalled);
     RUN_TEST(test_TimerCancel);
     RUN_TEST(test_TimerPayload);
+    RUN_TEST(test_TimerIsActive);
 
     RUN_TEST(test_EventButtonCallbackGetsCalled);
     RUN_TEST(test_EventButtonDebounces);
