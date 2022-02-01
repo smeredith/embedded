@@ -46,7 +46,7 @@ namespace embedded
         unsigned long m_duration;
         unsigned long m_startTime;
         void (*const m_callback)(void *);
-        unsigned long (*m_timeFunc)();
+        unsigned long (*const m_timeFunc)();
         bool m_expired = false;
     };
 }
