@@ -8,13 +8,14 @@ namespace embedded
   namespace eventbutton
   {
     void noop(void*) {};
-    void exitReleased(void *);
+    void enterPressing(void *);
     void enterDebouncingPress(void *);
 
     void debounceTimerHandler(void *);
 
     enum class State
     {
+      pressing,
       debouncingPress,
       pressed,
       released
@@ -30,13 +31,14 @@ namespace embedded
     using FSM = StateMachine<State, Event>;
 
     const FSM::Transition g_transitions[] = {
-        {State::released, Event::high, State::debouncingPress},
+        {State::released, Event::high, State::pressing},
+        {State::pressing, Event::high, State::debouncingPress},
         {State::debouncingPress, Event::high, State::debouncingPress},
         {State::debouncingPress, Event::timerExpired, State::pressed},
         {State::pressed, Event::low, State::released}};
 
     const FSM::Behavior g_behaviors[] = {
-        {State::released, noop, exitReleased},
+        {State::pressing, enterPressing, noop},
         {State::debouncingPress, enterDebouncingPress, noop}};
   }
 
@@ -55,7 +57,7 @@ namespace embedded
       m_stateMachine.tick(eventbutton::g_transitions, eventbutton::g_behaviors, this);
     }
 
-    void exitReleased()
+    void enterPressing()
     {
       m_callback();
     }
@@ -79,10 +81,10 @@ namespace embedded
 
   namespace eventbutton
   {
-    void exitReleased(void *eventButton)
+    void enterPressing(void *eventButton)
     {
-      //Serial.println("-Released");
-      static_cast<EventButton *>(eventButton)->exitReleased();
+      //Serial.println("+Pressing");
+      static_cast<EventButton *>(eventButton)->enterPressing();
     }
 
     void enterDebouncingPress(void *eventButton)

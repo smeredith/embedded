@@ -367,6 +367,7 @@ void test_EventButtonResets()
     EventButton button(4, eventButtonCallback, timeFunction);
     g_timerValue = 0;
     button.update(1);
+    button.update(1);
     button.update(0);
     g_timerValue = 4;
     button.update(0);
