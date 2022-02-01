@@ -30,19 +30,6 @@ namespace embedded
     }
   }
 
-  template <class B, class S>
-  void performExitBehaviorForState(const B &behaviors, S state, void *callbackPayload)
-  {
-    for (const auto &behavior : behaviors)
-    {
-      if (behavior.state == state)
-      {
-        behavior.onExitCallback(callbackPayload);
-        return;
-      }
-    }
-  }
-
   template <class T, class S, class B, class E>
   Optional<S> enterNextState(const T &transitions, const B &behaviors, S currentState, E event, void *callbackPayload)
   {
@@ -50,7 +37,6 @@ namespace embedded
 
     if (newState)
     {
-      performExitBehaviorForState(behaviors, currentState, callbackPayload);
       performEntryBehaviorForState(behaviors, *newState, callbackPayload);
     }
 
@@ -72,7 +58,6 @@ namespace embedded
     {
       StateT state;
       void (*onEntryCallback)(void *);
-      void (*onExitCallback)(void *);
     };
 
     StateMachine(StateT initialState)

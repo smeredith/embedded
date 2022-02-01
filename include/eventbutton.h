@@ -7,7 +7,6 @@ namespace embedded
 {
   namespace eventbutton
   {
-    void noop(void*) {};
     void enterPressing(void *);
     void enterDebouncingPress(void *);
 
@@ -38,8 +37,8 @@ namespace embedded
         {State::pressed, Event::low, State::released}};
 
     const FSM::Behavior g_behaviors[] = {
-        {State::pressing, enterPressing, noop},
-        {State::debouncingPress, enterDebouncingPress, noop}};
+        {State::pressing, enterPressing},
+        {State::debouncingPress, enterDebouncingPress}};
   }
 
   class EventButton

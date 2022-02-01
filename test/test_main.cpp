@@ -26,35 +26,26 @@ enum class State
 };
 
 int g_enters0 = 0;
-int g_exits0 = 0;
 int g_enters1 = 0;
-int g_exits1 = 0;
 int g_enters2 = 0;
-int g_exits2 = 0;
 
 void resetMonitors()
 {
     g_enters0 = 0;
-    g_exits0 = 0;
     g_enters1 = 0;
-    g_exits1 = 0;
     g_enters2 = 0;
-    g_exits2 = 0;
 }
 
 void enters0(void *) { g_enters0++; }
-void exits0(void *) { g_exits0++; }
 void enters1(void *) { g_enters1++; }
-void exits1(void *) { g_exits1++; }
 void enters2(void *) { g_enters2++; }
-void exits2(void *) { g_exits2++; }
 
 using MyStateMachine = StateMachine<State, Event>;
 
 const MyStateMachine::Behavior g_behaviors[] = {
-    {State::s0, enters0, exits0},
-    {State::s1, enters1, exits1},
-    {State::s2, enters2, exits2}};
+    {State::s0, enters0},
+    {State::s1, enters1},
+    {State::s2, enters2}};
 
 const MyStateMachine::Transition g_transitions[] = {
     {State::init, Event::init, State::s0},
@@ -108,11 +99,8 @@ void test_TransitionFromInit()
     stateMachine.tick(g_transitions, g_behaviors, nullptr);
 
     TEST_ASSERT_EQUAL(1, g_enters0);
-    TEST_ASSERT_EQUAL(0, g_exits0);
     TEST_ASSERT_EQUAL(0, g_enters1);
-    TEST_ASSERT_EQUAL(0, g_exits1);
     TEST_ASSERT_EQUAL(0, g_enters2);
-    TEST_ASSERT_EQUAL(0, g_exits2);
 }
 
 void test_TransitionToSelf()
@@ -126,11 +114,8 @@ void test_TransitionToSelf()
     stateMachine.tick(g_transitions, g_behaviors, nullptr);
 
     TEST_ASSERT_EQUAL(2, g_enters0);
-    TEST_ASSERT_EQUAL(1, g_exits0);
     TEST_ASSERT_EQUAL(0, g_enters1);
-    TEST_ASSERT_EQUAL(0, g_exits1);
     TEST_ASSERT_EQUAL(0, g_enters2);
-    TEST_ASSERT_EQUAL(0, g_exits2);
 }
 
 void test_NoTransitionsNoBehaviors()
@@ -142,11 +127,8 @@ void test_NoTransitionsNoBehaviors()
     stateMachine.tick(g_transitions, g_behaviors, nullptr);
 
     TEST_ASSERT_EQUAL(0, g_enters0);
-    TEST_ASSERT_EQUAL(0, g_exits0);
     TEST_ASSERT_EQUAL(0, g_enters1);
-    TEST_ASSERT_EQUAL(0, g_exits1);
     TEST_ASSERT_EQUAL(0, g_enters2);
-    TEST_ASSERT_EQUAL(0, g_exits2);
 }
 
 void test_NoSelfTransisionIfNotInTransitionTable()
@@ -158,11 +140,8 @@ void test_NoSelfTransisionIfNotInTransitionTable()
     stateMachine.tick(g_transitions, g_behaviors, nullptr);
 
     TEST_ASSERT_EQUAL(0, g_enters0);
-    TEST_ASSERT_EQUAL(0, g_exits0);
     TEST_ASSERT_EQUAL(0, g_enters1);
-    TEST_ASSERT_EQUAL(0, g_exits1);
     TEST_ASSERT_EQUAL(0, g_enters2);
-    TEST_ASSERT_EQUAL(0, g_exits2);
 }
 
 void test_NoEventsNoBehaviors()
@@ -173,11 +152,8 @@ void test_NoEventsNoBehaviors()
     stateMachine.tick(g_transitions, g_behaviors, nullptr);
 
     TEST_ASSERT_EQUAL(0, g_enters0);
-    TEST_ASSERT_EQUAL(0, g_exits0);
     TEST_ASSERT_EQUAL(0, g_enters1);
-    TEST_ASSERT_EQUAL(0, g_exits1);
     TEST_ASSERT_EQUAL(0, g_enters2);
-    TEST_ASSERT_EQUAL(0, g_exits2);
 }
 
 void test_OptionalDefaultHasNoValue()
