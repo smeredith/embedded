@@ -7,9 +7,7 @@ namespace embedded
 {
   namespace eventbutton
   {
-    void enterPressed(void *);
-    void exitPressed(void *);
-    void enterReleased(void *);
+    void noop(void*) {};
     void exitReleased(void *);
     void enterDebouncingPress(void *);
     void exitDebouncingPress(void *);
@@ -39,8 +37,7 @@ namespace embedded
         {State::pressed, Event::low, State::released}};
 
     const FSM::Behavior g_behaviors[] = {
-        {State::pressed, enterPressed, exitPressed},
-        {State::released, enterReleased, exitReleased},
+        {State::released, noop, exitReleased},
         {State::debouncingPress, enterDebouncingPress, exitDebouncingPress}};
   }
 
@@ -88,21 +85,6 @@ namespace embedded
 
   namespace eventbutton
   {
-    void enterPressed(void *eventButton)
-    {
-      //Serial.println("+Pressed");
-    }
-
-    void exitPressed(void *)
-    {
-      //Serial.println("-Pressed");
-    }
-
-    void enterReleased(void *)
-    {
-      //Serial.println("+Released");
-    }
-
     void exitReleased(void *eventButton)
     {
       //Serial.println("-Released");
