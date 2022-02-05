@@ -95,8 +95,7 @@ void test_TransitionFromInit()
     resetMonitors();
 
     MyStateMachine stateMachine(State::init);
-    stateMachine.enqueue(Event::init);
-    stateMachine.tick(g_transitions, g_behaviors, nullptr);
+    stateMachine.tick(Event::init, g_transitions, g_behaviors, nullptr);
 
     TEST_ASSERT_EQUAL(1, g_enters0);
     TEST_ASSERT_EQUAL(0, g_enters1);
@@ -108,10 +107,8 @@ void test_TransitionToSelf()
     resetMonitors();
 
     MyStateMachine stateMachine(State::init);
-    stateMachine.enqueue(Event::init);
-    stateMachine.tick(g_transitions, g_behaviors, nullptr);
-    stateMachine.enqueue(Event::event1);
-    stateMachine.tick(g_transitions, g_behaviors, nullptr);
+    stateMachine.tick(Event::init, g_transitions, g_behaviors, nullptr);
+    stateMachine.tick(Event::event1, g_transitions, g_behaviors, nullptr);
 
     TEST_ASSERT_EQUAL(2, g_enters0);
     TEST_ASSERT_EQUAL(0, g_enters1);
@@ -123,8 +120,7 @@ void test_NoTransitionsNoBehaviors()
     resetMonitors();
 
     MyStateMachine stateMachine(State::init);
-    stateMachine.enqueue(Event::event1);
-    stateMachine.tick(g_transitions, g_behaviors, nullptr);
+    stateMachine.tick(Event::event1, g_transitions, g_behaviors, nullptr);
 
     TEST_ASSERT_EQUAL(0, g_enters0);
     TEST_ASSERT_EQUAL(0, g_enters1);
@@ -136,20 +132,7 @@ void test_NoSelfTransisionIfNotInTransitionTable()
     resetMonitors();
 
     MyStateMachine stateMachine(State::s0);
-    stateMachine.enqueue(Event::init);
-    stateMachine.tick(g_transitions, g_behaviors, nullptr);
-
-    TEST_ASSERT_EQUAL(0, g_enters0);
-    TEST_ASSERT_EQUAL(0, g_enters1);
-    TEST_ASSERT_EQUAL(0, g_enters2);
-}
-
-void test_NoEventsNoBehaviors()
-{
-    resetMonitors();
-
-    MyStateMachine stateMachine(State::init);
-    stateMachine.tick(g_transitions, g_behaviors, nullptr);
+    stateMachine.tick(Event::init, g_transitions, g_behaviors, nullptr);
 
     TEST_ASSERT_EQUAL(0, g_enters0);
     TEST_ASSERT_EQUAL(0, g_enters1);
@@ -364,7 +347,6 @@ void process()
     RUN_TEST(test_TransitionToSelf);
     RUN_TEST(test_NoTransitionsNoBehaviors);
     RUN_TEST(test_NoSelfTransisionIfNotInTransitionTable);
-    RUN_TEST(test_NoEventsNoBehaviors);
 
     RUN_TEST(test_OptionalDefaultHasNoValue);
     RUN_TEST(test_OptionalOperatorBool);

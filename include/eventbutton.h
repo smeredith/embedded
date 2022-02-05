@@ -51,9 +51,8 @@ namespace embedded
 
     void update(int buttonState)
     {
-      m_stateMachine.enqueue(buttonState ? eventbutton::Event::high : eventbutton::Event::low);
+      m_stateMachine.tick(buttonState ? eventbutton::Event::high : eventbutton::Event::low, eventbutton::g_transitions, eventbutton::g_behaviors, this);
       m_timer.tick(this);
-      m_stateMachine.tick(eventbutton::g_transitions, eventbutton::g_behaviors, this);
     }
 
     void enterPressing()
@@ -68,7 +67,7 @@ namespace embedded
 
     void handleTimerExpired()
     {
-      m_stateMachine.enqueue(eventbutton::Event::timerExpired);
+      m_stateMachine.tick(eventbutton::Event::timerExpired, eventbutton::g_transitions, eventbutton::g_behaviors, this);
     }
 
   private:

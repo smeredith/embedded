@@ -65,20 +65,9 @@ namespace embedded
     {
     }
 
-    void enqueue(EventT event)
-    {
-      m_pendingEvent = event;
-    }
-
     template <class T, class B>
-    void tick(const T &transitions, const B &behaviors, void *callbackPayload)
+    void tick(EventT event, const T &transitions, const B &behaviors, void *callbackPayload)
     {
-      if (!m_pendingEvent)
-        return;
-
-      EventT event = *m_pendingEvent;
-      m_pendingEvent = Optional<EventT>();
-
       Optional<StateT> nextState = enterNextState(transitions, behaviors, m_state, event, callbackPayload);
       if (nextState)
       {
@@ -88,6 +77,5 @@ namespace embedded
 
   private:
     StateT m_state;
-    Optional<EventT> m_pendingEvent;
   };
 }
