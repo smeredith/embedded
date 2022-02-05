@@ -75,6 +75,12 @@ namespace embedded
       }
     }
 
+    template <class T, class B>
+    void tick(EventT event, const T &transitions, const B &behaviors)
+    {
+      tick(event, transitions, behaviors, nullptr);
+    }
+
   private:
     StateT m_state;
   };
