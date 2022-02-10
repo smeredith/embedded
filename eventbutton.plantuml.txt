@@ -1,18 +1,10 @@
 @startuml
 [*] -d-> low
-low -r-> callback : high
-callback -r-> debounce1
-debounce1 --> debounce2 : low 
-debounce2 --> debounce1 : high
-debounce1 ---> high : timer_expired
-debounce2 ---> high : timer_expired
-high --> debounce3 : low
-debounce3 --> debounce4 : high
-debounce4 --> debounce3 : low
-debounce3 --> low : timer_expired
-debounce4 --> low : timer_expired
+low --> callback : high
+callback --> debounce1
+debounce1 --> debounce1 : low
+debounce1 --> low : timer_expired
 
 callback : callback
 debounce1 : startTimer
-debounce3 : startTimer
 @enduml

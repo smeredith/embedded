@@ -16,11 +16,7 @@ namespace embedded
     {
       low,
       callback,
-      debouncing1,
-      debouncing2,
-      high,
-      debouncing3,
-      debouncing4
+      debouncing1
     };
 
     enum class Event
@@ -36,20 +32,12 @@ namespace embedded
     const FSM::Transition g_transitions[] = {
         {State::low, Event::high, State::callback},
         {State::callback, Event::nextState, State::debouncing1},
-        {State::debouncing1, Event::low, State::debouncing2},
-        {State::debouncing2, Event::high, State::debouncing1},
-        {State::debouncing1, Event::timerExpired, State::high},
-        {State::debouncing2, Event::timerExpired, State::high},
-        {State::high, Event::low, State::debouncing3},
-        {State::debouncing3, Event::high, State::debouncing4},
-        {State::debouncing4, Event::low, State::debouncing3},
-        {State::debouncing3, Event::timerExpired, State::low},
-        {State::debouncing4, Event::timerExpired, State::low}};
+        {State::debouncing1, Event::low, State::debouncing1},
+        {State::debouncing1, Event::timerExpired, State::low}};
 
     const FSM::Behavior g_behaviors[] = {
         {State::callback, enterCallback},
-        {State::debouncing1, enterDebouncing},
-        {State::debouncing3, enterDebouncing}};
+        {State::debouncing1, enterDebouncing}};
   }
 
   class EventButton
@@ -63,7 +51,11 @@ namespace embedded
     void update(int buttonState)
     {
       m_timer.tick(this);
-      m_stateMachine.tick(buttonState ? eventbutton::Event::high : eventbutton::Event::low, eventbutton::g_transitions, eventbutton::g_behaviors, this);
+      if (buttonState != m_lastState)
+      {
+        m_stateMachine.tick(buttonState ? eventbutton::Event::high : eventbutton::Event::low, eventbutton::g_transitions, eventbutton::g_behaviors, this);
+        m_lastState = buttonState;
+      }
     }
 
     void enterCallback()
@@ -86,6 +78,7 @@ namespace embedded
     void (*const m_callback)();
     eventbutton::FSM m_stateMachine;
     OneshotTimer m_timer;
+    int m_lastState = 0;
   };
 
   namespace eventbutton
