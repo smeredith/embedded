@@ -1,10 +1,10 @@
 @startuml
-[*] -d-> low
-low --> callback : high
-callback --> debounce1
-debounce1 --> debounce1 : low
-debounce1 --> low : timer_expired
+[*] -d-> start
+start --> callback : high
+callback --> debounce
+debounce --> debounce : low
+debounce --> start: timer_expired
 
 callback : callback
-debounce1 : startTimer
+debounce : startTimer
 @enduml

@@ -14,7 +14,7 @@ namespace embedded
 
     enum class State
     {
-      low,
+      start,
       callback,
       debouncing1
     };
@@ -30,10 +30,10 @@ namespace embedded
     using FSM = StateMachine<State, Event>;
 
     const FSM::Transition g_transitions[] = {
-        {State::low, Event::high, State::callback},
+        {State::start, Event::high, State::callback},
         {State::callback, Event::nextState, State::debouncing1},
         {State::debouncing1, Event::low, State::debouncing1},
-        {State::debouncing1, Event::timerExpired, State::low}};
+        {State::debouncing1, Event::timerExpired, State::start}};
 
     const FSM::Behavior g_behaviors[] = {
         {State::callback, enterCallback},
@@ -44,7 +44,7 @@ namespace embedded
   {
   public:
     EventButton(unsigned long intervalMs, void (*callback)(), unsigned long (*timeFunc)())
-        : m_callback(callback), m_stateMachine(eventbutton::State::low), m_timer(intervalMs, eventbutton::debounceTimerHandler, timeFunc)
+        : m_callback(callback), m_stateMachine(eventbutton::State::start), m_timer(intervalMs, eventbutton::debounceTimerHandler, timeFunc)
     {
     }
 
