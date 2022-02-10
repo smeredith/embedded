@@ -30,19 +30,6 @@ namespace embedded
     }
   }
 
-  template <class T, class S, class B, class E>
-  Optional<S> enterNextState(const T &transitions, const B &behaviors, S currentState, E event, void *callbackPayload)
-  {
-    Optional<S> newState = getNextState(transitions, currentState, event);
-
-    if (newState)
-    {
-      performEntryBehaviorForState(behaviors, *newState, callbackPayload);
-    }
-
-    return newState;
-  }
-
   template <class StateT, class EventT>
   class StateMachine
   {
@@ -68,10 +55,11 @@ namespace embedded
     template <class T, class B>
     void tick(EventT event, const T &transitions, const B &behaviors, void *callbackPayload)
     {
-      Optional<StateT> nextState = enterNextState(transitions, behaviors, m_state, event, callbackPayload);
+      Optional<StateT> nextState = getNextState(transitions, m_state, event);
       if (nextState)
       {
         m_state = *nextState;
+        performEntryBehaviorForState(behaviors, m_state, callbackPayload);
       }
     }
 

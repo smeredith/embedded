@@ -323,14 +323,12 @@ void test_EventButtonDebounces()
 void test_EventButtonResets()
 {
     g_eventButtonCallbackCalled = 0;
-    EventButton button(4, eventButtonCallback, timeFunction);
+    EventButton button(1, eventButtonCallback, timeFunction);
     g_timerValue = 0;
     button.update(1);
-    button.update(1);
+    g_timerValue = 1;
     button.update(0);
-    g_timerValue = 4;
-    button.update(0);
-    button.update(0);
+    g_timerValue = 2;
     button.update(1);
 
     TEST_ASSERT_EQUAL(2, g_eventButtonCallbackCalled);

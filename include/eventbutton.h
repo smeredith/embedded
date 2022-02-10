@@ -7,60 +7,72 @@ namespace embedded
 {
   namespace eventbutton
   {
-    void enterPressing(void *);
-    void enterDebouncingPress(void *);
+    void enterCallback(void *);
+    void enterDebouncing(void *);
 
     void debounceTimerHandler(void *);
 
     enum class State
     {
-      pressing,
-      debouncingPress,
-      pressed,
-      released
+      low,
+      callback,
+      debouncing1,
+      debouncing2,
+      high,
+      debouncing3,
+      debouncing4
     };
 
     enum class Event
     {
       low,
       high,
-      timerExpired
+      timerExpired,
+      nextState
     };
 
     using FSM = StateMachine<State, Event>;
 
     const FSM::Transition g_transitions[] = {
-        {State::released, Event::high, State::pressing},
-        {State::pressing, Event::high, State::debouncingPress},
-        {State::debouncingPress, Event::high, State::debouncingPress},
-        {State::debouncingPress, Event::timerExpired, State::pressed},
-        {State::pressed, Event::low, State::released}};
+        {State::low, Event::high, State::callback},
+        {State::callback, Event::nextState, State::debouncing1},
+        {State::debouncing1, Event::low, State::debouncing2},
+        {State::debouncing2, Event::high, State::debouncing1},
+        {State::debouncing1, Event::timerExpired, State::high},
+        {State::debouncing2, Event::timerExpired, State::high},
+        {State::high, Event::low, State::debouncing3},
+        {State::debouncing3, Event::high, State::debouncing4},
+        {State::debouncing4, Event::low, State::debouncing3},
+        {State::debouncing3, Event::timerExpired, State::low},
+        {State::debouncing4, Event::timerExpired, State::low}};
 
     const FSM::Behavior g_behaviors[] = {
-        {State::pressing, enterPressing},
-        {State::debouncingPress, enterDebouncingPress}};
+        {State::callback, enterCallback},
+        {State::debouncing1, enterDebouncing},
+        {State::debouncing3, enterDebouncing}};
   }
 
   class EventButton
   {
   public:
     EventButton(unsigned long intervalMs, void (*callback)(), unsigned long (*timeFunc)())
-        : m_intervalMs(intervalMs), m_callback(callback), m_stateMachine(eventbutton::State::released), m_timer(eventbutton::debounceTimerHandler, timeFunc)
+        : m_intervalMs(intervalMs), m_callback(callback), m_stateMachine(eventbutton::State::low), m_timer(eventbutton::debounceTimerHandler, timeFunc)
     {
     }
 
     void update(int buttonState)
     {
-      m_stateMachine.tick(buttonState ? eventbutton::Event::high : eventbutton::Event::low, eventbutton::g_transitions, eventbutton::g_behaviors, this);
       m_timer.tick(this);
+      m_stateMachine.tick(buttonState ? eventbutton::Event::high : eventbutton::Event::low, eventbutton::g_transitions, eventbutton::g_behaviors, this);
     }
 
-    void enterPressing()
+    void enterCallback()
     {
       m_callback();
+      m_stateMachine.tick(eventbutton::Event::nextState, eventbutton::g_transitions, eventbutton::g_behaviors, this);
     }
 
-    void enterDebouncingPress()
+    void enterDebouncing()
     {
       m_timer.setTimeMs(m_intervalMs);
     }
@@ -79,16 +91,16 @@ namespace embedded
 
   namespace eventbutton
   {
-    void enterPressing(void *eventButton)
+    void enterCallback(void *eventButton)
     {
-      //Serial.println("+Pressing");
-      static_cast<EventButton *>(eventButton)->enterPressing();
+      //Serial.println("+enterCallback");
+      static_cast<EventButton *>(eventButton)->enterCallback();
     }
 
-    void enterDebouncingPress(void *eventButton)
+    void enterDebouncing(void *eventButton)
     {
-      //Serial.println("+DebouncingPress()");
-      static_cast<EventButton *>(eventButton)->enterDebouncingPress();
+      //Serial.println("+enterDebouncing()");
+      static_cast<EventButton *>(eventButton)->enterDebouncing();
     }
 
     void debounceTimerHandler(void *eventButton)
