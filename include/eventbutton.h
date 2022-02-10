@@ -56,7 +56,7 @@ namespace embedded
   {
   public:
     EventButton(unsigned long intervalMs, void (*callback)(), unsigned long (*timeFunc)())
-        : m_intervalMs(intervalMs), m_callback(callback), m_stateMachine(eventbutton::State::low), m_timer(eventbutton::debounceTimerHandler, timeFunc)
+        : m_callback(callback), m_stateMachine(eventbutton::State::low), m_timer(intervalMs, eventbutton::debounceTimerHandler, timeFunc)
     {
     }
 
@@ -74,7 +74,7 @@ namespace embedded
 
     void enterDebouncing()
     {
-      m_timer.setTimeMs(m_intervalMs);
+      m_timer.start();
     }
 
     void handleTimerExpired()
@@ -83,7 +83,6 @@ namespace embedded
     }
 
   private:
-    unsigned long m_intervalMs;
     void (*const m_callback)();
     eventbutton::FSM m_stateMachine;
     OneshotTimer m_timer;

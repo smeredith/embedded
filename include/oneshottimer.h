@@ -5,8 +5,8 @@ namespace embedded
     class OneshotTimer
     {
     public:
-        explicit OneshotTimer(void (*callback)(void *), unsigned long (*timeFunc)())
-            : m_duration(0), m_startTime(0), m_callback(callback), m_timeFunc(timeFunc), m_expired(true){};
+        explicit OneshotTimer(unsigned long duration, void (*callback)(void *), unsigned long (*timeFunc)())
+            : m_duration(duration), m_startTime(0), m_callback(callback), m_timeFunc(timeFunc), m_expired(true){};
 
         void tick(void *payload)
         {
@@ -17,11 +17,15 @@ namespace embedded
             }
         }
 
-        void setTimeMs(unsigned long duration)
+        void start()
         {
             m_startTime = m_timeFunc();
-            m_duration = duration;
             m_expired = false;
+        }
+
+        void setTimeMs(unsigned long duration)
+        {
+            m_duration = duration;
         }
 
         long timeRemaining() const

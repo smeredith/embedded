@@ -249,8 +249,8 @@ unsigned long timeFunction()
 void test_TimerCallbackGetsCalled()
 {
     g_timerCallbackCalled = 0;
-    OneshotTimer timer(timerCallback, timeFunction);
-    timer.setTimeMs(0);
+    OneshotTimer timer(0,timerCallback, timeFunction);
+    timer.start();
     g_timerValue = 1;
     timer.tick(nullptr);
 
@@ -260,8 +260,8 @@ void test_TimerCallbackGetsCalled()
 void test_TimerCancel()
 {
     g_timerCallbackCalled = 0;
-    OneshotTimer timer(timerCallback, timeFunction);
-    timer.setTimeMs(0);
+    OneshotTimer timer(0,timerCallback, timeFunction);
+    timer.start();
     g_timerValue = 1;
     timer.cancel();
     timer.tick(nullptr);
@@ -271,9 +271,9 @@ void test_TimerCancel()
 
 void test_TimerPayload()
 {
-    OneshotTimer timer(timerCallback, timeFunction);
+    OneshotTimer timer(0,timerCallback, timeFunction);
     g_timerValue = 1;
-    timer.setTimeMs(0);
+    timer.start();
     timer.tick(&timer);
 
     TEST_ASSERT_EQUAL(&timer, g_timerCallbackPayload);
@@ -281,9 +281,9 @@ void test_TimerPayload()
 
 void test_TimerIsActive()
 {
-    OneshotTimer timer(timerCallback, timeFunction);
+    OneshotTimer timer(1,timerCallback, timeFunction);
     g_timerValue = 0;
-    timer.setTimeMs(1);
+    timer.start();
 
     TEST_ASSERT_TRUE(timer.isActive());
     g_timerValue = 1;
