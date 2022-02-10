@@ -20,7 +20,7 @@ void buttonCallback()
 {
     Serial.println("buttonCallback");
 
-    static int ledState = LOW;
+    static int ledState = HIGH;
     digitalWrite(ledPin, ledState);
     ledState = !ledState;
 }

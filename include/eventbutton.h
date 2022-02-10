@@ -16,7 +16,7 @@ namespace embedded
     {
       start,
       callback,
-      debouncing1
+      debouncing
     };
 
     enum class Event
@@ -31,13 +31,13 @@ namespace embedded
 
     const FSM::Transition g_transitions[] = {
         {State::start, Event::high, State::callback},
-        {State::callback, Event::nextState, State::debouncing1},
-        {State::debouncing1, Event::low, State::debouncing1},
-        {State::debouncing1, Event::timerExpired, State::start}};
+        {State::callback, Event::nextState, State::debouncing},
+        {State::debouncing, Event::low, State::debouncing},
+        {State::debouncing, Event::timerExpired, State::start}};
 
     const FSM::Behavior g_behaviors[] = {
         {State::callback, enterCallback},
-        {State::debouncing1, enterDebouncing}};
+        {State::debouncing, enterDebouncing}};
   }
 
   class EventButton
