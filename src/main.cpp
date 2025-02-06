@@ -1,4 +1,4 @@
-#include <arduino.h>
+#include <Arduino.h>
 #include "eventbutton.h"
 
 const int buttonPin = 0;
